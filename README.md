@@ -1,4 +1,4 @@
-# Tiler bash script
+## Tiler bash script
 
 ----
 
@@ -6,17 +6,17 @@
 
 ----
 
-## Requirements
+### Requirements
 
 * [ImageMagick](http://www.imagemagick.org/script/binary-releases.php)
 
-## Running
+### Running
 
 ```bash
-./stitch.sh <*arguments*>
+./stitch.sh <arguments>
 ``` 
 
-## Usage
+### Usage
 ```bash
 USAGE: stitch.sh <basename> <levelsofdetail> <xtiles> <ytiles> <format>
 example: stitch.sh map_1 50000 20 14 png
