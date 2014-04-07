@@ -54,8 +54,6 @@ while [[ $XCOUNT -le $XTILES ]]; do
 	for (( i = 0; i < "$YTILES"; i++ )); do
 		YCOMMANDSARRAY[i]="""$BASENAME"_"$LOD"_"$XCOUNT"_$(($i + 1))."$FILEFORMAT"""
 	done
-	# echo "${YCOMMANDSARRAY[@]}"
-	# sleep 1
 	convert "${YCOMMANDSARRAY[@]}" -append _maptmp_"$BASENAME"_"$LOD"/append_"$XCOUNT"."$FILEFORMAT"
 	echo "append_"$XCOUNT""
 	((XCOUNT++))
@@ -69,8 +67,7 @@ for (( i = 0; i < "$XTILES"; i++ )); do
 done
 # echo "${XCOMMANDSARRAY[@]}"
 convert "${XCOMMANDSARRAY[@]}" +append _maptmp_"$BASENAME"_"$LOD"/comb."$FILEFORMAT"
-echo "Appending done. Check temp folder"
-#sleep 10
+# echo "Appending done. Check temp folder"
 cp "_maptmp_"$BASENAME"_"$LOD"/comb."$FILEFORMAT"" ""$BASENAME"_"$LOD"_FINAL."$FILEFORMAT""
 rm -r "_maptmp_"$BASENAME"_"$LOD""
 echo "Finished!"
