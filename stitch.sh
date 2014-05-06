@@ -30,28 +30,17 @@ function usage {
     exit 1
 }
 
-# ImageMagick check
-IMINS="$(which convert)"
-if [ "$IMINS" = "" ]; then
-	echo "IMAGEMAGICK not installed! "
-	echo "Set IMAGEMAGICK location: "
-	read -e IM
-	export MAGICK_HOME="$IM"
-	export PATH="$MAGICK_HOME/bin:$PATH"
-	export DYLD_LIBRARY_PATH="$MAGICK_HOME/lib/"
-	echo "SET TO: $IM "
-else
-	echo "IMAGEMAGICK CONVERT detected at $IMINS"
-fi
+# Check if ImageMagick is installed.
+imcheck
 
-# Expression check
-
-# Prompts
-
-# main
+# Create temporary directory for the unfinished stitchings.
 mkdir "_maptmp_"$BASENAME"_"$LOD""
+
+# Create the vertical stitchings based on input $XTILES .
 while [[ $XCOUNT -le $XTILES ]]; do
 	for (( i = 0; i < "$YTILES"; i++ )); do
+    # Add to array containing commands to be run.
+    # Looking for a better/cleaner alternative *help appreciated*.
 		YCOMMANDSARRAY[i]="""$BASENAME"_"$LOD"_"$XCOUNT"_$(($i + 1))."$FILEFORMAT"""
 	done
 	convert "${YCOMMANDSARRAY[@]}" -append _maptmp_"$BASENAME"_"$LOD"/append_"$XCOUNT"."$FILEFORMAT"
@@ -65,9 +54,30 @@ echo "YCOUNT: "$YCOUNT
 for (( i = 0; i < "$XTILES"; i++ )); do
 		XCOMMANDSARRAY[i]=""_maptmp_"$BASENAME"_"$LOD"/append_$(($i + 1))."$FILEFORMAT"""
 done
-# echo "${XCOMMANDSARRAY[@]}"
+
+# Combine the vertical slices.
 convert "${XCOMMANDSARRAY[@]}" +append _maptmp_"$BASENAME"_"$LOD"/comb."$FILEFORMAT"
-# echo "Appending done. Check temp folder"
+
+# Move the output file and clean up temporary directories.
 cp "_maptmp_"$BASENAME"_"$LOD"/comb."$FILEFORMAT"" ""$BASENAME"_"$LOD"_FINAL."$FILEFORMAT""
 rm -r "_maptmp_"$BASENAME"_"$LOD""
 echo "Finished!"
+
+
+## FUNCTIONS
+
+# Ensure the *convert* module of ImageMagick is installed.
+function imcheck {
+  IMINS="$(which convert)"
+  if [ "$IMINS" = "" ]; then
+    echo "IMAGEMAGICK/convert not installed! "
+    echo "Set IMAGEMAGICK location: "
+    read -e IM
+    export MAGICK_HOME="$IM"
+    export PATH="$MAGICK_HOME/bin:$PATH"
+    export DYLD_LIBRARY_PATH="$MAGICK_HOME/lib/"
+    echo "SET TO: $IM "
+  else
+    echo "IMAGEMAGICK CONVERT detected at $IMINS"
+  fi
+}
